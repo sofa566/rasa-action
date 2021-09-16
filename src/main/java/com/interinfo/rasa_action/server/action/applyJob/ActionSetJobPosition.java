@@ -1,6 +1,7 @@
 package com.interinfo.rasa_action.server.action.applyJob;
 
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -46,19 +47,19 @@ public class ActionSetJobPosition implements Action {
 
         log.debug("=== >>> 1");
         List<Job> jobs = beanFactory.getBean(ActionShowPosition.class).getJobPosition().getJobs();
-        log.debug("=== >>> 2");
+        log.debug("=== >>> 2"+jobs);
         Job[] jobArray = new Job[jobs.size()];
         log.debug("=== >>> 3");
-        jobArray = (Job[]) jobs.toArray();
+        jobArray = (Job[]) jobs.toArray(jobArray);
         log.debug("=== >>> 4");
-        
+        SlotSet ss = null;
         if (CollectionsUtils.isNotEmpty(tracker.getLatestMessage().getEntities()) ) {
             log.debug("=== >>> 5");
-            log.debug("=== >>> Entities : ", tracker.getLatestMessage().getEntities());
+            log.debug("=== >>> Entities : "+ tracker.getLatestMessage().getEntities());
 
         	String item = tracker.getLatestMessage().getEntities().get(0).getValue();
-            log.debug("=== >>> 6");
-        	new SlotSet("job_position", jobArray[Integer.valueOf(item) - 1].getNameZh());
+            log.debug("=== >>> 6 : job_position="+jobArray[Integer.valueOf(item) - 1].getNameZh());
+        	ss = new SlotSet("job_position", jobArray[Integer.valueOf(item) - 1].getNameZh());
         }
         	
         List<String> entitiesValue = tracker.getLatestEntityValues("job-title");
@@ -69,7 +70,7 @@ public class ActionSetJobPosition implements Action {
         // send the message back to the user
         dispatcher.utterMessage("");
 
-        return Collections.emptyList();
+        return Arrays.asList(ss);
     }
 
 }
